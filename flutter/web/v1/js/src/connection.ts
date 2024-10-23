@@ -6,7 +6,7 @@ import * as sha256 from "fast-sha256";
 import * as globals from "./globals";
 import { decompress, mapKey, sleep } from "./common";
 
-const PORT = 21116;
+const PORT = 41116;
 const HOSTS = [
   "rs-sg.rustdesk.com",
   "rs-cn.rustdesk.com",

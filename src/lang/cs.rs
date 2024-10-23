@@ -564,7 +564,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Plug out all", "Odpojit všechny"),
         ("True color (4:4:4)", "Skutečné barvy (4:4:4)"),
         ("Enable blocking user input", "Povolit blokování uživatelského vstupu"),
-        ("id_input_tip", "Můžete zadat ID, přímou IP adresu nebo doménu s portem (<doména>:<port>).\nPokud chcete přistupovat k zařízení na jiném serveru, připojte adresu serveru (<id>@<adresa_serveru>?key=<hodnota_klíče>), například,\n9123456234@192.168.16.1:21117?key=5Qbwsde3unUcJBtrx9ZkvUmwFNoExHzpryHuPUdqlWM=.\nPokud chcete přistupovat k zařízení na veřejném serveru, zadejte \"<id>@public\", klíč není pro veřejný server potřeba."),
+        ("id_input_tip", "Můžete zadat ID, přímou IP adresu nebo doménu s portem (<doména>:<port>).\nPokud chcete přistupovat k zařízení na jiném serveru, připojte adresu serveru (<id>@<adresa_serveru>?key=<hodnota_klíče>), například,\n9123456234@192.168.16.1:41117?key=5Qbwsde3unUcJBtrx9ZkvUmwFNoExHzpryHuPUdqlWM=.\nPokud chcete přistupovat k zařízení na veřejném serveru, zadejte \"<id>@public\", klíč není pro veřejný server potřeba."),
         ("privacy_mode_impl_mag_tip", "Režim 1"),
         ("privacy_mode_impl_virtual_display_tip", "Režim 2"),
         ("Enter privacy mode", "Vstup do režimu soukromí"),

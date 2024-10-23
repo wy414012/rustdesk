@@ -564,7 +564,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Plug out all", ""),
         ("True color (4:4:4)", ""),
         ("Enable blocking user input", ""),
-        ("id_input_tip", "ניתן להזין מזהה, IP ישיר, או דומיין עם פורט (<domain>:<port>).\nאם ברצונך לגשת למכשיר בשרת אחר, אנא הוסף את כתובת השרת (<id>@<server_address>?key=<key_value>), לדוגמה,\n9123456234@192.168.16.1:21117?key=5Qbwsde3unUcJBtrx9ZkvUmwFNoExHzpryHuPUdqlWM=.\nאם ברצונך לגשת למכשיר בשרת ציבורי, אנא הזן \"<id>@public\", המפתח אינו נדרש לשרת ציבורי"),
+        ("id_input_tip", "ניתן להזין מזהה, IP ישיר, או דומיין עם פורט (<domain>:<port>).\nאם ברצונך לגשת למכשיר בשרת אחר, אנא הוסף את כתובת השרת (<id>@<server_address>?key=<key_value>), לדוגמה,\n9123456234@192.168.16.1:41117?key=5Qbwsde3unUcJBtrx9ZkvUmwFNoExHzpryHuPUdqlWM=.\nאם ברצונך לגשת למכשיר בשרת ציבורי, אנא הזן \"<id>@public\", המפתח אינו נדרש לשרת ציבורי"),
         ("privacy_mode_impl_mag_tip", "מצב 1"),
         ("privacy_mode_impl_virtual_display_tip", "מצב 2"),
         ("Enter privacy mode", ""),
