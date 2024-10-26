@@ -564,7 +564,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Plug out all", "Desconectar tudo"),
         ("True color (4:4:4)", "Cor verdadeira (4:4:4)"),
         ("Enable blocking user input", "Habilitar bloqueio da entrada do usuário"),
-        ("id_input_tip", "Você pode inserir um ID, um IP direto ou um domínio com uma porta (<domínio>:<porta>).\nPara acessar um dispositivo em outro servidor, adicione o IP do servidor (<id>@<endereço_servidor>?key=<chave_valor>), por exemplo,\n9123456234@192.168.16.1:21117?key=5Qbwsde3unUcJBtrx9ZkvUmwFNoExHzpryHuPUdqlWM=.\nPara acessar um dispositivo em um servidor público, insira \"<id>@public\", a chave não é necessária para um servidor público."),
+        ("id_input_tip", "Você pode inserir um ID, um IP direto ou um domínio com uma porta (<domínio>:<porta>).\nPara acessar um dispositivo em outro servidor, adicione o IP do servidor (<id>@<endereço_servidor>?key=<chave_valor>), por exemplo,\n9123456234@192.168.16.1:41117?key=5Qbwsde3unUcJBtrx9ZkvUmwFNoExHzpryHuPUdqlWM=.\nPara acessar um dispositivo em um servidor público, insira \"<id>@public\", a chave não é necessária para um servidor público."),
         ("privacy_mode_impl_mag_tip", ""),
         ("privacy_mode_impl_virtual_display_tip", ""),
         ("Enter privacy mode", "Entrar no modo privado"),
