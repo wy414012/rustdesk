@@ -13,7 +13,7 @@
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/I2I04VU09)
 
 远程桌面软件，开箱即用，无需任何配置。您完全掌控数据，不用担心安全问题。您可以使用我们的注册/中继服务器，
-或者[自己设置](https://rustdesk.com/server)，
+或者[自己设置](https://free.rustdesk.v6.pub/server)，
 亦或者[开发您的版本](https://github.com/rustdesk/rustdesk-server-demo)。
 
 ![image](https://user-images.githubusercontent.com/71636191/171661982-430285f0-2e12-4b1d-9957-4a58e375304d.png)
@@ -51,7 +51,7 @@ RustDesk 期待各位的贡献. 如何参与开发? 详情请看 [CONTRIBUTING-Z
 
 - 运行 `cargo run`
 
-## [构建](https://rustdesk.com/docs/en/dev/build/)
+## [构建](https://free.rustdesk.v6.pub/docs/en/dev/build/)
 
 ## 在 Linux 上编译
 

@@ -16,7 +16,7 @@ Apabila kamu ingin mengatasi sebuah masalah yang sudah ada di daftar issue, hara
 
 - Setiap commit harus disertai dengan tanda tangan Sertifikat Asal Pengembang (Developer Certificate of Origin) (<http://developercertificate.org>), yang mengindikasikan bahwa kamu (and your employer if applicable) bersedia untuk patuh terhadap persyaratan dari [lisensi projek](../LICENCE). Di git bash, ini adalah opsi parameter `-s` pada `git commit`
 
-- Jika perubahan yang kamu buat tidak mendapat tinjauan atau kamu membutuhkan orang tertentu untuk meninjaunya, kamu bisa @-reply seorang reviewer meminta peninjauan dalam permintaan pull request atau komentar, atau kamu bisa meminta tinjauan melalui [email](mailto:info@rustdesk.com).
+- Jika perubahan yang kamu buat tidak mendapat tinjauan atau kamu membutuhkan orang tertentu untuk meninjaunya, kamu bisa @-reply seorang reviewer meminta peninjauan dalam permintaan pull request atau komentar, atau kamu bisa meminta tinjauan melalui [email](mailto:info@free.rustdesk.v6.pub).
 
 - Sertakan test yang relevan terhadap bug atau fitur baru yang sudah dikerjakan.
 

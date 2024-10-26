@@ -14,7 +14,7 @@ ENV VCPKG_ROOT=/vcpkg
 RUN $VCPKG_ROOT/vcpkg --disable-metrics install libvpx libyuv opus aom
 
 WORKDIR /
-RUN wget https://github.com/rustdesk/doc.rustdesk.com/releases/download/console/dep.tar.gz && tar xzf dep.tar.gz
+RUN wget https://github.com/rustdesk/doc.free.rustdesk.v6.pub/releases/download/console/dep.tar.gz && tar xzf dep.tar.gz
 
 
 USER vscode
@@ -41,10 +41,10 @@ WORKDIR $WORKDIR
 ENV ANDROID_NDK_HOME=/opt/android/ndk/22.1.7171670
 
 # Somehow try to automate flutter pub get
-# https://rustdesk.com/docs/en/dev/build/android/
+# https://free.rustdesk.v6.pub/docs/en/dev/build/android/
 # Put below steps in entrypoint.sh
 # cd flutter
-# wget https://github.com/rustdesk/doc.rustdesk.com/releases/download/console/so.tar.gz
+# wget https://github.com/rustdesk/doc.free.rustdesk.v6.pub/releases/download/console/so.tar.gz
 # tar xzf so.tar.gz
 
 # own /opt/android

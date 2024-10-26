@@ -35,7 +35,7 @@ inspanningen van medewerkers aan hetzelfde issue te voorkomen.
 
 - Als je patch niet beoordeeld wordt of je hebt een specifiek persoon nodig om hem 
   te beoordelen kunt u @-reply een reviewer vragen in het pull verzoek of een
-  commentaar, of je kunt om een review vragen via [email](mailto:info@rustdesk.com).
+  commentaar, of je kunt om een review vragen via [email](mailto:info@free.rustdesk.v6.pub).
 
 - Tests toevoegen die relevant zijn voor de gerepareerde bug of de nieuwe functie.
 

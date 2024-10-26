@@ -43,7 +43,7 @@
 
 ## 施行
 
-虐待、ハラスメント、その他容認できない行為があった場合は、[info@rustdesk.com](mailto:info@rustdesk.com) の
+虐待、ハラスメント、その他容認できない行為があった場合は、[info@free.rustdesk.v6.pub](mailto:info@free.rustdesk.v6.pub) の
 執行担当コミュニティリーダーに報告することができる。
 すべての苦情は、迅速かつ公正に検討・調査されます。
 
