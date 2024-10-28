@@ -168,7 +168,7 @@ jobs:
           fi
 
       - name: Download RustDeskTempTopMostWindow artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@master
         if: ${{ inputs.upload-artifact }}
         with:
           name: topmostwindow-artifacts
@@ -176,7 +176,7 @@ jobs:
 
       - name: Upload unsigned
         if: env.UPLOAD_ARTIFACT == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@master
         with:
           name: rustdesk-unsigned-windows-${{ matrix.job.arch }}
           path: rustdesk
@@ -370,6 +370,78 @@ jobs:
           files: |
             ./SignOutput/rustdesk-*.exe
 
+  build-for-macOS-arm64-selfhost:
+    # use build-for-macOS instead
+    if: false
+    runs-on: [self-hosted, macOS, ARM64]
+    steps:
+      - name: Export GitHub Actions cache environment variables
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Install flutter rust bridge deps
+        shell: bash
+        run: |
+          cargo install flutter_rust_bridge_codegen --version ${{ env.FLUTTER_RUST_BRIDGE_VERSION }} --features "uuid"
+          pushd flutter && flutter pub get && popd
+          ~/.cargo/bin/flutter_rust_bridge_codegen --rust-input ./src/flutter_ffi.rs --dart-output ./flutter/lib/generated_bridge.dart --c-output ./flutter/macos/Runner/bridge_generated.h
+
+      - name: Build rustdesk
+        run: |
+          ./build.py --flutter --hwcodec
+
+      - name: create unsigned dmg
+        if: env.UPLOAD_ARTIFACT == 'true'
+        run: |
+          CREATE_DMG="$(command -v create-dmg)"
+          CREATE_DMG="$(readlink -f "$CREATE_DMG")"
+          sed -i -e 's/MAXIMUM_UNMOUNTING_ATTEMPTS=3/MAXIMUM_UNMOUNTING_ATTEMPTS=7/' "$CREATE_DMG"
+          create-dmg --icon "RustDesk.app" 200 190 --hide-extension "RustDesk.app" --window-size 800 400 --app-drop-link 600 185 rustdesk-${{ env.VERSION }}-arm64.dmg ./flutter/build/macos/Build/Products/Release/RustDesk.app
+
+      - name: Upload unsigned macOS app
+        if: env.UPLOAD_ARTIFACT == 'true'
+        uses: actions/upload-artifact@master
+        with:
+          name: rustdesk-unsigned-macos-arm64
+          path: rustdesk-${{ env.VERSION }}-arm64.dmg # can not upload the directory directly or tar.gz file, which destroy the link structure, causing the codesign failed
+
+      - name: Codesign app and create signed dmg
+        if: env.MACOS_P12_BASE64 != null && env.UPLOAD_ARTIFACT == 'true'
+        run: |
+          # Patch create-dmg to give more attempts to unmount image
+          CREATE_DMG="$(command -v create-dmg)"
+          CREATE_DMG="$(readlink -f "$CREATE_DMG")"
+          sed -i -e 's/MAXIMUM_UNMOUNTING_ATTEMPTS=3/MAXIMUM_UNMOUNTING_ATTEMPTS=7/' "$CREATE_DMG"
+          # start sign the rustdesk.app and dmg
+          rm -rf *.dmg || true
+          codesign --force --options runtime -s ${{ secrets.MACOS_CODESIGN_IDENTITY }} --deep --strict ./flutter/build/macos/Build/Products/Release/RustDesk.app -vvv
+          create-dmg --icon "RustDesk.app" 200 190 --hide-extension "RustDesk.app" --window-size 800 400 --app-drop-link 600 185 rustdesk-${{ env.VERSION }}.dmg ./flutter/build/macos/Build/Products/Release/RustDesk.app
+          codesign --force --options runtime -s ${{ secrets.MACOS_CODESIGN_IDENTITY }} --deep --strict rustdesk-${{ env.VERSION }}.dmg -vvv
+          # notarize the rustdesk-${{ env.VERSION }}.dmg
+          rcodesign notary-submit --api-key-path ~/.p12/api-key.json  --staple rustdesk-${{ env.VERSION }}.dmg
+
+      - name: Rename rustdesk
+        if: env.UPLOAD_ARTIFACT == 'true'
+        run: |
+          for name in rustdesk*??.dmg; do
+              mv "$name" "${name%%.dmg}-aarch64.dmg"
+          done
+
+      - name: Publish DMG package
+        if: env.UPLOAD_ARTIFACT == 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          prerelease: true
+          tag_name: ${{ env.TAG_NAME }}
+          files: |
+            rustdesk*-aarch64.dmg
+
   build-rustdesk-ios:
     if: ${{ inputs.upload-artifact }}
     name: build rustdesk ios ipa
@@ -381,7 +453,7 @@ jobs:
           - {
               arch: aarch64,
               target: aarch64-apple-ios,
-              os: macos-latest,
+              os: macos-13,
               vcpkg-triplet: arm64-ios,
             }
     steps:
@@ -460,7 +532,63 @@ jobs:
 
       # - name: Upload Artifacts
       #   # if: env.ANDROID_SIGNING_KEY != null && env.UPLOAD_ARTIFACT == 'true'
-      #   uses: actions/upload-artifact@v4
+      #   uses: actions/upload-artifact@master
+      #   with:
+      #     name: rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}.apk
+      #     path: flutter/build/ios/ipa/*.ipa
+
+      # - name: Publish ipa package
+      #   # if: env.ANDROID_SIGNING_KEY != null && env.UPLOAD_ARTIFACT == 'true'
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     prerelease: true
+      #     tag_name: ${{ env.TAG_NAME }}
+      #     files: |
+      #       flutter/build/ios/ipa/*.ipa
+
+  build-rustdesk-ios-selfhost:
+    #if: ${{ inputs.upload-artifact }}
+    if: false
+    runs-on: [self-hosted, macOS, ARM64]
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Export GitHub Actions cache environment variables
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      # $VCPKG_ROOT/vcpkg install --triplet arm64-ios --x-install-root="$VCPKG_ROOT/installed"
+
+      - name: Install flutter rust bridge deps
+        shell: bash
+        run: |
+          cargo install flutter_rust_bridge_codegen --version ${{ env.FLUTTER_RUST_BRIDGE_VERSION }} --features "uuid"
+          pushd flutter && flutter pub get && popd
+          ~/.cargo/bin/flutter_rust_bridge_codegen --rust-input ./src/flutter_ffi.rs --dart-output ./flutter/lib/generated_bridge.dart --c-output ./flutter/ios/Runner/bridge_generated.h
+
+      - name: Build rustdesk lib
+        run: |
+          cargo build --features flutter,hwcodec --release --target aarch64-apple-ios --lib
+
+      - name: Build rustdesk
+        # ios sdk not installed on this machine, I will install it later after I am back home
+        if: false
+        shell: bash
+        run: |
+          pushd flutter
+          # flutter build ipa --release --obfuscate --split-debug-info=./split-debug-info --no-codesign
+          # for easy debugging
+          flutter build ipa --release --no-codesign
+
+      # - name: Upload Artifacts
+      #   # if: env.ANDROID_SIGNING_KEY != null && env.UPLOAD_ARTIFACT == 'true'
+      #   uses: actions/upload-artifact@master
       #   with:
       #     name: rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}.apk
       #     path: flutter/build/ios/ipa/*.ipa
@@ -523,7 +651,7 @@ jobs:
         if: env.MACOS_P12_BASE64 != null
         uses: timheuer/base64-to-file@v1.2
         with:
-          # 
+          # https://gregoryszorc.com/docs/apple-codesign/stable/apple_codesign_rcodesign.html#notarizing-and-stapling
           fileName: rustdesk.json
           fileDir: ${{ github.workspace }}
           encodedString: ${{ secrets.MACOS_NOTARIZE_JSON }}
@@ -619,7 +747,7 @@ jobs:
 
       - name: Upload unsigned macOS app
         if: env.UPLOAD_ARTIFACT == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@master
         with:
           name: rustdesk-unsigned-macos-${{ matrix.job.arch }}
           path: rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}.dmg # can not upload the directory directly or tar.gz, which destroy the link structure, causing the codesign failed
@@ -639,8 +767,8 @@ jobs:
           codesign --force --options runtime -s ${{ secrets.MACOS_CODESIGN_IDENTITY }} --deep --strict ./flutter/build/macos/Build/Products/Release/RustDesk.app -vvv
           create-dmg --icon "RustDesk.app" 200 190 --hide-extension "RustDesk.app" --window-size 800 400 --app-drop-link 600 185 rustdesk-${{ env.VERSION }}.dmg ./flutter/build/macos/Build/Products/Release/RustDesk.app
           codesign --force --options runtime -s ${{ secrets.MACOS_CODESIGN_IDENTITY }} --deep --strict rustdesk-${{ env.VERSION }}.dmg -vvv
-          # 禁用掉签名后上传到aws存储桶
-          # rcodesign notary-submit --api-key-path ${{ github.workspace }}/rustdesk.json  --staple rustdesk-${{ env.VERSION }}.dmg
+          # notarize the rustdesk-${{ env.VERSION }}.dmg
+          rcodesign notary-submit --api-key-path ${{ github.workspace }}/rustdesk.json  --staple rustdesk-${{ env.VERSION }}.dmg
 
       - name: Rename rustdesk
         if: env.UPLOAD_ARTIFACT == 'true'
@@ -666,19 +794,19 @@ jobs:
     if: ${{ inputs.upload-artifact }}
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@master
         with:
           name: rustdesk-unsigned-macos-x86_64
           path: ./
 
       - name: Download Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@master
         with:
           name: rustdesk-unsigned-macos-aarch64
           path: ./
 
       - name: Download Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@master
         with:
           name: rustdesk-unsigned-windows-x86_64
           path: ./windows-x86_64/
@@ -829,7 +957,7 @@ jobs:
         shell: bash
 
       - name: Restore bridge files
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@master
         with:
           name: bridge-artifact
           path: ./
@@ -886,7 +1014,7 @@ jobs:
           esac
 
       - name: Upload Rustdesk library to Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@master
         with:
           name: librustdesk.so.${{ matrix.job.target }}
           path: ./target/${{ matrix.job.target }}/release/liblibrustdesk.so
@@ -957,7 +1085,7 @@ jobs:
 
       - name: Upload Artifacts
         if: env.ANDROID_SIGNING_KEY != null && env.UPLOAD_ARTIFACT == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@master
         with:
           name: rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}.apk
           path: ${{steps.sign-rustdesk.outputs.signedReleaseFile}}
@@ -1052,32 +1180,32 @@ jobs:
           flutter-version: ${{ env.ANDROID_FLUTTER_VERSION }}
 
       - name: Restore bridge files
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@master
         with:
           name: bridge-artifact
           path: ./
 
       - name: Download Rustdesk library from Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@master
         with:
           name: librustdesk.so.aarch64-linux-android
           path: ./flutter/android/app/src/main/jniLibs/arm64-v8a
 
       - name: Download Rustdesk library from Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@master
         with:
           name: librustdesk.so.armv7-linux-androideabi
           path: ./flutter/android/app/src/main/jniLibs/armeabi-v7a
 
       - name: Download Rustdesk library from Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@master
         with:
           name: librustdesk.so.x86_64-linux-android
           path: ./flutter/android/app/src/main/jniLibs/x86_64
 
       - name: Download Rustdesk library from Artifacts
         if: ${{ env.reltype == 'debug' }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@master
         with:
           name: librustdesk.so.i686-linux-android
           path: ./flutter/android/app/src/main/jniLibs/x86
@@ -1133,7 +1261,7 @@ jobs:
 
       - name: Upload Artifacts
         if: env.ANDROID_SIGNING_KEY != null && env.UPLOAD_ARTIFACT == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@master
         with:
           name: rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}.apk
           path: ${{steps.sign-rustdesk.outputs.signedReleaseFile}}
@@ -1173,14 +1301,15 @@ jobs:
               deb_arch: amd64,
               vcpkg-triplet: x64-linux,
             }
-          #- {
-          #    arch: aarch64,
-          #    target: aarch64-unknown-linux-gnu,
-          #    distro: ubuntu18.04,
-          #    on: [self-hosted, Linux, ARM64],
-          #    deb_arch: arm64,
-          #    vcpkg-triplet: arm64-linux,
-          #  }
+          - {disabled} 
+          - {
+              arch: aarch64,
+              target: aarch64-unknown-linux-gnu,
+              distro: ubuntu18.04,
+              on: [self-hosted, Linux, ARM64],
+              deb_arch: arm64,
+              vcpkg-triplet: arm64-linux,
+            }
     steps:
       - name: Export GitHub Actions cache environment variables
         uses: actions/github-script@v6
@@ -1232,7 +1361,7 @@ jobs:
 
       - name: Restore bridge files
         if: matrix.job.arch == 'x86_64' || env.UPLOAD_ARTIFACT == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@master
         with:
           name: bridge-artifact
           path: ./
@@ -1265,7 +1394,7 @@ jobs:
 
       - name: Restore bridge files
         if: matrix.job.arch == 'x86_64' || env.UPLOAD_ARTIFACT == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@master
         with:
           name: bridge-artifact
           path: ./
@@ -1440,7 +1569,7 @@ jobs:
             rustdesk-*.rpm
 
       - name: Upload deb
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@master
         if: env.UPLOAD_ARTIFACT == 'true'
         with:
           name: rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}.deb
@@ -1494,16 +1623,17 @@ jobs:
               vcpkg-triplet: x64-linux,
               extra_features: ",hwcodec",
             }
-          #- {
-          #    arch: armv7,
-          #    target: armv7-unknown-linux-gnueabihf,
-          #    on: [self-hosted, Linux, ARM64],
-          #    distro: ubuntu18.04-rustdesk,
-          #    deb_arch: armhf,
-          #    sciter_arch: arm32,
-          #    vcpkg-triplet: arm-linux,
-          #    extra_features: "",
-          #  }
+          - {disabled}
+          - {
+              arch: armv7,
+              target: armv7-unknown-linux-gnueabihf,
+              on: [self-hosted, Linux, ARM64],
+              distro: ubuntu18.04-rustdesk,
+              deb_arch: armhf,
+              sciter_arch: arm32,
+              vcpkg-triplet: arm-linux,
+              extra_features: "",
+            }
     steps:
       - name: Export GitHub Actions cache environment variables
         uses: actions/github-script@v6
@@ -1682,7 +1812,7 @@ jobs:
             rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}-sciter.deb
 
       - name: Upload deb
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@master
         if: env.UPLOAD_ARTIFACT == 'true'
         with:
           name: rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}-sciter.deb
@@ -1698,13 +1828,13 @@ jobs:
       matrix:
         job:
           - { target: x86_64-unknown-linux-gnu, arch: x86_64 }
-          # 禁用掉aarch64- { target: aarch64-unknown-linux-gnu, arch: aarch64 }
+          - { target: aarch64-unknown-linux-gnu, arch: aarch64 }
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
 
       - name: Download Binary
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@master
         with:
           name: rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}.deb
           path: .
@@ -1763,20 +1893,21 @@ jobs:
               arch: x86_64,
               suffix: "-sciter",
             }
-         # - {
-         #     target: aarch64-unknown-linux-gnu,
-         #     # try out newer flatpak since error of "error: Nothing matches org.freedesktop.Platform in remote flathub"
-         #     distro: ubuntu22.04,
-         #     on: [self-hosted, Linux, ARM64],
-         #     arch: aarch64,
-         #     suffix: "",
-         #   }
+          - {disabled}  
+          - {
+              target: aarch64-unknown-linux-gnu,
+              # try out newer flatpak since error of "error: Nothing matches org.freedesktop.Platform in remote flathub"
+              distro: ubuntu22.04,
+              on: [self-hosted, Linux, ARM64],
+              arch: aarch64,
+              suffix: "",
+            }
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
 
       - name: Download Binary
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@master
         with:
           name: rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}${{ matrix.job.suffix }}.deb
           path: .
@@ -1857,12 +1988,13 @@ jobs:
           sudo apt-get install -y wget npm
 
       - name: Install flutter
-        uses: subosito/flutter-action@v2.12.0 
+        uses: subosito/flutter-action@v2.12.0 #https://github.com/subosito/flutter-action/issues/277
         with:
           channel: "stable"
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
+      # https://rustdesk.com/docs/en/dev/build/web/
       - name: Build web
         shell: bash
         run: |
@@ -1878,7 +2010,7 @@ jobs:
           popd
 
           pushd flutter/web
-          wget -c https://github.com/rustdesk/doc.rustdesk.com/releases/download/console/web_deps.tar.gz
+          wget https://github.com/rustdesk/doc.rustdesk.com/releases/download/console/web_deps.tar.gz
           tar xzf web_deps.tar.gz
           popd
 
