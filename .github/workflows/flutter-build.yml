@@ -1301,15 +1301,15 @@ jobs:
               deb_arch: amd64,
               vcpkg-triplet: x64-linux,
             }
-          - {disabled} 
-          - {
-              arch: aarch64,
-              target: aarch64-unknown-linux-gnu,
-              distro: ubuntu18.04,
-              on: [self-hosted, Linux, ARM64],
-              deb_arch: arm64,
-              vcpkg-triplet: arm64-linux,
-            }
+        #  禁用掉自托管的armUbuntu 
+        #  - {
+        #      arch: aarch64,
+        #      target: aarch64-unknown-linux-gnu,
+        #      distro: ubuntu18.04,
+        #      on: [self-hosted, Linux, ARM64],
+        #      deb_arch: arm64,
+        #      vcpkg-triplet: arm64-linux,
+        #    }
     steps:
       - name: Export GitHub Actions cache environment variables
         uses: actions/github-script@v6
@@ -1623,17 +1623,17 @@ jobs:
               vcpkg-triplet: x64-linux,
               extra_features: ",hwcodec",
             }
-          - {disabled}
-          - {
-              arch: armv7,
-              target: armv7-unknown-linux-gnueabihf,
-              on: [self-hosted, Linux, ARM64],
-              distro: ubuntu18.04-rustdesk,
-              deb_arch: armhf,
-              sciter_arch: arm32,
-              vcpkg-triplet: arm-linux,
-              extra_features: "",
-            }
+        #  禁用掉自托管的armUbuntu
+        #  - {
+        #      arch: armv7,
+        #      target: armv7-unknown-linux-gnueabihf,
+        #      on: [self-hosted, Linux, ARM64],
+        #      distro: ubuntu18.04-rustdesk,
+        #      deb_arch: armhf,
+        #      sciter_arch: arm32,
+        #      vcpkg-triplet: arm-linux,
+        #      extra_features: "",
+        #    }
     steps:
       - name: Export GitHub Actions cache environment variables
         uses: actions/github-script@v6
@@ -1893,15 +1893,15 @@ jobs:
               arch: x86_64,
               suffix: "-sciter",
             }
-          - {disabled}  
-          - {
-              target: aarch64-unknown-linux-gnu,
-              # try out newer flatpak since error of "error: Nothing matches org.freedesktop.Platform in remote flathub"
-              distro: ubuntu22.04,
-              on: [self-hosted, Linux, ARM64],
-              arch: aarch64,
-              suffix: "",
-            }
+        # 禁用掉自托管的armUbuntu  
+        #  - {
+        #      target: aarch64-unknown-linux-gnu,
+        #      # try out newer flatpak since error of "error: Nothing matches org.freedesktop.Platform in remote flathub"
+        #      distro: ubuntu22.04,
+        #      on: [self-hosted, Linux, ARM64],
+        #      arch: aarch64,
+        #      suffix: "",
+        #    }
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
