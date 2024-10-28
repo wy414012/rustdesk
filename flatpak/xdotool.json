@@ -2,7 +2,7 @@
     "name": "xdotool",
     "buildsystem": "simple",
     "build-commands": [
-        "make -j4 && PREFIX=./build make install",
+        "make -j$(nproc) && PREFIX=./build make install",
         "cp -r ./build/*  /app/"
     ],
     "sources": [
