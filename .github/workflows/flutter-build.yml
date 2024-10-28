@@ -1819,7 +1819,6 @@ jobs:
           path: rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}-sciter.deb
 
   build-appimage:
-    if: false
     name: Build appimage ${{ matrix.job.target }}
     needs: [build-rustdesk-linux]
     runs-on: ubuntu-20.04
@@ -1869,32 +1868,31 @@ jobs:
           files: |
             ./appimage/rustdesk-${{ env.VERSION }}-*.AppImage
 
-  build-flatpak:
-    if: false
-    name: Build flatpak ${{ matrix.job.target }}${{ matrix.job.suffix }}
-    needs:
-      - build-rustdesk-linux
-      - build-rustdesk-linux-sciter
-    runs-on: ${{ matrix.job.on }}
-    if: ${{ inputs.upload-artifact }}
-    strategy:
-      fail-fast: false
-      matrix:
-        job:
-          - {
-              target: x86_64-unknown-linux-gnu,
-              distro: ubuntu18.04,
-              on: ubuntu-20.04,
-              arch: x86_64,
-              suffix: "",
-            }
-          - {
-              target: x86_64-unknown-linux-gnu,
-              distro: ubuntu18.04,
-              on: ubuntu-20.04,
-              arch: x86_64,
-              suffix: "-sciter",
-            }
+#  build-flatpak:
+#    name: Build flatpak ${{ matrix.job.target }}${{ matrix.job.suffix }}
+#    needs:
+#      - build-rustdesk-linux
+#      - build-rustdesk-linux-sciter
+#    runs-on: ${{ matrix.job.on }}
+#    if: ${{ inputs.upload-artifact }}
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        job:
+#          - {
+#              target: x86_64-unknown-linux-gnu,
+#              distro: ubuntu18.04,
+#              on: ubuntu-20.04,
+#              arch: x86_64,
+#              suffix: "",
+#            }
+#          - {
+#              target: x86_64-unknown-linux-gnu,
+#              distro: ubuntu18.04,
+#              on: ubuntu-20.04,
+#              arch: x86_64,
+#              suffix: "-sciter",
+#            }
         # 禁用掉自托管的armUbuntu  
         #  - {
         #      target: aarch64-unknown-linux-gnu,
@@ -1904,73 +1902,73 @@ jobs:
         #      arch: aarch64,
         #      suffix: "",
         #    }
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
-
-      - name: Download Binary
-        uses: actions/download-artifact@master
-        with:
-          name: rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}${{ matrix.job.suffix }}.deb
-          path: .
-
-      - name: Rename Binary
-        run: |
-          mv rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}${{ matrix.job.suffix }}.deb flatpak/rustdesk.deb
-
-      - uses: rustdesk-org/run-on-arch-action@amd64-support
-        name: Build rustdesk flatpak package for ${{ matrix.job.arch }}
-        id: flatpak
-        with:
-          arch: ${{ matrix.job.arch }}
-          distro: ${{ matrix.job.distro }}
-          githubToken: ${{ github.token }}
-          setup: |
-            ls -l "${PWD}"
-          dockerRunArgs: |
-            --volume "${PWD}:/workspace"
-          shell: /bin/bash
-          install: |
-            apt-get update -y
-            apt-get install -y \
-               curl \
-               git \
-               rpm \
-               wget
-          run: |
-            # disable git safe.directory
-            git config --global --add safe.directory "*"
-            pushd /workspace
-            # install
-            apt-get update -y
-            apt-get install -y \
-               cmake \
-               curl \
-               flatpak \
-               flatpak-builder \
-               gcc \
-               git \
-               g++ \
-               libgtk-3-dev \
-               nasm \
-               wget
-            # flatpak deps
-            flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-            flatpak --user install -y flathub org.freedesktop.Platform/${{ matrix.job.arch }}/23.08
-            flatpak --user install -y flathub org.freedesktop.Sdk/${{ matrix.job.arch }}/23.08
-            # package
-            pushd flatpak
-            git clone https://github.com/flathub/shared-modules.git --depth=1
-            flatpak-builder --user --force-clean --repo=repo ./build ./rustdesk.json
-            flatpak build-bundle ./repo rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}${{ matrix.job.suffix }}.flatpak com.rustdesk.RustDesk
-
-      - name: Publish flatpak package
-        uses: softprops/action-gh-release@v1
-        with:
-          prerelease: true
-          tag_name: ${{ env.TAG_NAME }}
-          files: |
-            flatpak/rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}${{ matrix.job.suffix }}.flatpak
+#    steps:
+#      - name: Checkout source code
+#        uses: actions/checkout@v4
+#
+#      - name: Download Binary
+#        uses: actions/download-artifact@master
+#        with:
+#          name: rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}${{ matrix.job.suffix }}.deb
+#          path: .
+#
+#      - name: Rename Binary
+#        run: |
+#         mv rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}${{ matrix.job.suffix }}.deb flatpak/rustdesk.deb
+#
+#      - uses: rustdesk-org/run-on-arch-action@amd64-support
+#        name: Build rustdesk flatpak package for ${{ matrix.job.arch }}
+#        id: flatpak
+#        with:
+#          arch: ${{ matrix.job.arch }}
+#          distro: ${{ matrix.job.distro }}
+#          githubToken: ${{ github.token }}
+#          setup: |
+#            ls -l "${PWD}"
+#          dockerRunArgs: |
+#            --volume "${PWD}:/workspace"
+#          shell: /bin/bash
+#          install: |
+#            apt-get update -y
+#            apt-get install -y \
+#               curl \
+#               git \
+#               rpm \
+#               wget
+#          run: |
+#            # disable git safe.directory
+#            git config --global --add safe.directory "*"
+#            pushd /workspace
+#            # install
+#            apt-get update -y
+#            apt-get install -y \
+#               cmake \
+#               curl \
+#               flatpak \
+#               flatpak-builder \
+#              gcc \
+#               git \
+#               g++ \
+#               libgtk-3-dev \
+#               nasm \
+#               wget
+#            # flatpak deps
+#            flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+#            flatpak --user install -y flathub org.freedesktop.Platform/${{ matrix.job.arch }}/23.08
+#            flatpak --user install -y flathub org.freedesktop.Sdk/${{ matrix.job.arch }}/23.08
+#           # package
+#            pushd flatpak
+#            git clone https://github.com/flathub/shared-modules.git --depth=1
+#            flatpak-builder --user --force-clean --repo=repo ./build ./rustdesk.json
+#            flatpak build-bundle ./repo rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}${{ matrix.job.suffix }}.flatpak com.rustdesk.RustDesk
+#
+#      - name: Publish flatpak package
+#        uses: softprops/action-gh-release@v1
+#        with:
+#          prerelease: true
+#          tag_name: ${{ env.TAG_NAME }}
+#          files: |
+#            flatpak/rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}${{ matrix.job.suffix }}.flatpak
 
   build-rustdesk-web:
     if: False
