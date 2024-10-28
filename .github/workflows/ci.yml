@@ -26,44 +26,6 @@ on:
       - "flatpak/**"
 
 jobs:
-  # ensure_cargo_fmt:
-  #   name: Ensure 'cargo fmt' has been run
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #   - uses: actions-rs/toolchain@v1
-  #     with:
-  #       toolchain: stable
-  #       default: true
-  #       profile: minimal
-  #       components: rustfmt
-  #   - uses: actions/checkout@v3
-  #   - run: cargo fmt -- --check
-
-  # min_version:
-  #   name: Minimum supported rust version
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #   - name: Checkout source code
-  #     uses: actions/checkout@v3
-
-  #   - name: Install rust toolchain (v${{ env.MIN_SUPPORTED_RUST_VERSION }})
-  #     uses: actions-rs/toolchain@v1
-  #     with:
-  #       toolchain: ${{ env.MIN_SUPPORTED_RUST_VERSION }}
-  #       default: true
-  #       profile: minimal # minimal component installation (ie, no documentation)
-  #       components: clippy
-  #   - name: Run clippy (on minimum supported rust version to prevent warnings we can't fix)
-  #     uses: actions-rs/cargo@v1
-  #     with:
-  #       command: clippy
-  #       args: --locked --all-targets --all-features -- --allow clippy::unknown_clippy_lints
-  #   - name: Run tests
-  #     uses: actions-rs/cargo@v1
-  #     with:
-  #       command: test
-  #       args: --locked
-
   build:
     name: ${{ matrix.job.target }} (${{ matrix.job.os }})
     runs-on: ${{ matrix.job.os }}
@@ -71,20 +33,11 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          # - { target: aarch64-unknown-linux-gnu   , os: ubuntu-20.04, use-cross: true }
-          # - { target: arm-unknown-linux-gnueabihf , os: ubuntu-20.04, use-cross: true }
-          # - { target: arm-unknown-linux-musleabihf, os: ubuntu-20.04, use-cross: true }
-          # - { target: i686-pc-windows-msvc        , os: windows-2022                  }
-          # - { target: i686-unknown-linux-gnu      , os: ubuntu-20.04, use-cross: true }
-          # - { target: i686-unknown-linux-musl     , os: ubuntu-20.04, use-cross: true }
-          # - { target: x86_64-apple-darwin         , os: macos-10.15                   }
-          # - { target: x86_64-pc-windows-gnu       , os: windows-2022                  }
-          # - { target: x86_64-pc-windows-msvc      , os: windows-2022                  }
           - { target: x86_64-unknown-linux-gnu    , os: ubuntu-20.04                  }
           # - { target: x86_64-unknown-linux-musl   , os: ubuntu-20.04, use-cross: true }
     steps:
     - name: Export GitHub Actions cache environment variables
-      uses: actions/github-script@v6
+      uses: actions/github-script@v7
       with:
         script: |
           core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
@@ -157,7 +110,7 @@ jobs:
     - uses: Swatinem/rust-cache@v2
 
     - name: Build
-      uses: actions-rs/cargo@v1.0.1
+      uses: actions-rs/cargo@v1
       with:
         use-cross: ${{ matrix.job.use-cross }}
         command: build
@@ -167,42 +120,6 @@ jobs:
       shell: bash
       run: |
         cargo clean
-
-    # - name: Strip debug information from executable
-    #   id: strip
-    #   shell: bash
-    #   run: |
-    #     # Figure out suffix of binary
-    #     EXE_suffix=""
-    #     case ${{ matrix.job.target }} in
-    #       *-pc-windows-*) EXE_suffix=".exe" ;;
-    #     esac;
-
-    #     # Figure out what strip tool to use if any
-    #     STRIP="strip"
-    #     case ${{ matrix.job.target }} in
-    #       arm-unknown-linux-*) STRIP="arm-linux-gnueabihf-strip" ;;
-    #       aarch64-unknown-linux-gnu) STRIP="aarch64-linux-gnu-strip" ;;
-    #       *-pc-windows-msvc) STRIP="" ;;
-    #     esac;
-
-    #     # Setup paths
-    #     BIN_DIR="${{ env.CICD_INTERMEDIATES_DIR }}/stripped-release-bin/"
-    #     mkdir -p "${BIN_DIR}"
-    #     BIN_NAME="${{ env.PROJECT_NAME }}${EXE_suffix}"
-    #     BIN_PATH="${BIN_DIR}/${BIN_NAME}"
-
-    #     # Copy the release build binary to the result location
-    #     cp "target/${{ matrix.job.target }}/release/${BIN_NAME}" "${BIN_DIR}"
-
-    #     # Also strip if possible
-    #     if [ -n "${STRIP}" ]; then
-    #       "${STRIP}" "${BIN_PATH}"
-    #     fi
-
-    #     # Let subsequent steps know where to find the (stripped) bin
-    #     echo ::set-output name=BIN_PATH::${BIN_PATH}
-    #     echo ::set-output name=BIN_NAME::${BIN_NAME}
 
     - name: Set testing options
       id: test-options
@@ -225,7 +142,7 @@ jobs:
         echo "CARGO_TEST_OPTIONS=${CARGO_TEST_OPTIONS}" >> $GITHUB_OUTPUT
 
     - name: Run tests
-      uses: actions-rs/cargo@v1.0.1
+      uses: actions-rs/cargo@v1
       with:
         use-cross: ${{ matrix.job.use-cross }}
         command: test
