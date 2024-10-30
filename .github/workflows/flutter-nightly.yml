@@ -1,9 +1,9 @@
 name: Flutter Nightly Build
 
 on:
-  schedule:
-    # schedule build every night
-    - cron: "0 0 * * *"
+  push:
+    tags:
+      - 'test*' #仅限带有（test-xxx标签的tag时候触发）
   workflow_dispatch:
 
 jobs:
