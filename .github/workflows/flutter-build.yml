@@ -539,7 +539,7 @@ jobs:
           # flutter build ipa --release --obfuscate --split-debug-info=./split-debug-info --no-codesign
           # for easy debugging
           flutter build ipa --release --no-codesign
-          ls flutter/build/ios/ipa/*.ipa
+
       # - name: Upload Artifacts
       #   # if: env.ANDROID_SIGNING_KEY != null && env.UPLOAD_ARTIFACT == 'true'
       #   uses: actions/upload-artifact@master
