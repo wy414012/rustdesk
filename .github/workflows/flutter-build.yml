@@ -1635,14 +1635,14 @@ jobs:
             rustdesk-*.deb
             rustdesk-*.rpm
             
-      - name: Sync web-server
-        if: env.UPLOAD_ARTIFACT == 'true'
-        run: |
-            mkdir -p ~/.ssh
-            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
-            chmod 600 ~/.ssh/id_ed25519
-            echo "StrictHostKeyChecking no" >> ~/.ssh/config
-            rsync -avz rustdesk-* $SECRET_CHECK_SCRIPT_URL
+      #- name: Sync web-server
+      #  if: env.UPLOAD_ARTIFACT == 'true'
+      #  run: |
+      #      mkdir -p ~/.ssh
+      #      echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+      #      chmod 600 ~/.ssh/id_ed25519
+      #      echo "StrictHostKeyChecking no" >> ~/.ssh/config
+      #      rsync -avz rustdesk-* $SECRET_CHECK_SCRIPT_URL
             
       - name: Upload deb
         uses: actions/upload-artifact@master
@@ -1679,14 +1679,14 @@ jobs:
           files: |
             res/rustdesk-${{ env.VERSION }}*.zst
             
-      - name: Sync web-server
-        if: env.UPLOAD_ARTIFACT == 'true'
-        run: |
-            mkdir -p ~/.ssh
-            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
-            chmod 600 ~/.ssh/id_ed25519
-            echo "StrictHostKeyChecking no" >> ~/.ssh/config
-            rsync -avz res/rustdesk-${{ env.VERSION }}*.zst $SECRET_CHECK_SCRIPT_URL
+      #- name: Sync web-server
+      #  if: env.UPLOAD_ARTIFACT == 'true'
+      #  run: |
+      #      mkdir -p ~/.ssh
+      #      echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+      #      chmod 600 ~/.ssh/id_ed25519
+      #      echo "StrictHostKeyChecking no" >> ~/.ssh/config
+      #      rsync -avz res/rustdesk-${{ env.VERSION }}*.zst $SECRET_CHECK_SCRIPT_URL
             
   build-rustdesk-linux-sciter:
     if: false
