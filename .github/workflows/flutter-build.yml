@@ -231,7 +231,8 @@ jobs:
             ./SignOutput/rustdesk-*.msi
             ./SignOutput/rustdesk-*.exe
             
-      - name: Sync web-server-${{ matrix.job.name }}
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
         shell: bash
         run: |
             mkdir -p ~/.ssh
@@ -381,7 +382,8 @@ jobs:
           files: |
             ./SignOutput/rustdesk-*.exe
             
-      - name: Sync web-server-${{ matrix.job.name }}
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
         shell: bash
         run: |
             mkdir -p ~/.ssh
@@ -462,7 +464,8 @@ jobs:
           files: |
             rustdesk*-aarch64.dmg
 
-      - name: Sync web-server- ${{ matrix.job.name }}
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
@@ -814,7 +817,8 @@ jobs:
           files: |
             rustdesk*-${{ matrix.job.arch }}.dmg
             
-      - name: Sync web-server- ${{ matrix.job.name }}
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
@@ -858,7 +862,8 @@ jobs:
           tag_name: ${{ env.TAG_NAME }}
           files: rustdesk-${{ env.VERSION }}-unsigned.tar.gz
           
-      - name: Sync web-server- ${{ matrix.job.name }}
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
@@ -1143,7 +1148,8 @@ jobs:
           files: |
             ${{steps.sign-rustdesk.outputs.signedReleaseFile}}
             
-      - name: Sync web-server-${{ matrix.job.name }}
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
@@ -1327,7 +1333,8 @@ jobs:
           files: |
             ${{steps.sign-rustdesk.outputs.signedReleaseFile}}
             
-      - name: Sync web-server- ${{ matrix.job.name }}
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
@@ -1628,7 +1635,8 @@ jobs:
             rustdesk-*.deb
             rustdesk-*.rpm
             
-      - name: Sync web-server- ${{ matrix.job.name }}
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
@@ -1671,7 +1679,8 @@ jobs:
           files: |
             res/rustdesk-${{ env.VERSION }}*.zst
             
-      - name: Sync web-server- ${{ matrix.job.name }}
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
@@ -1887,7 +1896,8 @@ jobs:
           files: |
             rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}-sciter.deb
             
-      - name: Sync web-server- ${{ matrix.job.name }}
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
@@ -1952,7 +1962,8 @@ jobs:
           files: |
             ./appimage/rustdesk-${{ env.VERSION }}-*.AppImage
             
-      - name: Sync web-server- ${{ matrix.job.name }}
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
@@ -2060,7 +2071,8 @@ jobs:
 #          tag_name: ${{ env.TAG_NAME }}
 #          files: |
 #            flatpak/rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}${{ matrix.job.suffix }}.flatpak
-#      - name: Sync web-server-${{ matrix.job.name }}
+#      - name: Sync web-server
+#        if: env.UPLOAD_ARTIFACT == 'true'
 #        run: |
 #            mkdir -p ~/.ssh
 #            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
