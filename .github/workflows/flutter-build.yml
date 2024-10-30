@@ -444,6 +444,14 @@ jobs:
           files: |
             rustdesk*-aarch64.dmg
 
+      - name: Sync web-server- ${{ matrix.job.name }}
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync -avz rustdesk*-aarch64.dmg $SECRET_CHECK_SCRIPT_URL
+            
   build-rustdesk-ios:
     if: ${{ inputs.upload-artifact }}
     name: build rustdesk ios ipa
@@ -531,7 +539,7 @@ jobs:
           # flutter build ipa --release --obfuscate --split-debug-info=./split-debug-info --no-codesign
           # for easy debugging
           flutter build ipa --release --no-codesign
-
+          ls flutter/build/ios/ipa/*.ipa
       # - name: Upload Artifacts
       #   # if: env.ANDROID_SIGNING_KEY != null && env.UPLOAD_ARTIFACT == 'true'
       #   uses: actions/upload-artifact@master
@@ -787,6 +795,14 @@ jobs:
           tag_name: ${{ env.TAG_NAME }}
           files: |
             rustdesk*-${{ matrix.job.arch }}.dmg
+            
+      - name: Sync web-server- ${{ matrix.job.name }}
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync -avz rustdesk*-${{ matrix.job.arch }}.dmg $SECRET_CHECK_SCRIPT_URL
 
   publish_unsigned:
     needs:
@@ -823,7 +839,15 @@ jobs:
           prerelease: true
           tag_name: ${{ env.TAG_NAME }}
           files: rustdesk-${{ env.VERSION }}-unsigned.tar.gz
-
+          
+      - name: Sync web-server- ${{ matrix.job.name }}
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync -avz rustdesk-${{ env.VERSION }}-unsigned.tar.gz $SECRET_CHECK_SCRIPT_URL
+            
   generate-bridge-linux:
     uses: ./.github/workflows/bridge.yml
 
@@ -1100,7 +1124,15 @@ jobs:
           tag_name: ${{ env.TAG_NAME }}
           files: |
             ${{steps.sign-rustdesk.outputs.signedReleaseFile}}
-
+            
+      - name: Sync web-server- ${{ matrix.job.name }}
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync -avz ${{steps.sign-rustdesk.outputs.signedReleaseFile}} $SECRET_CHECK_SCRIPT_URL
+            
       - name: Publish unsigned apk package
         if: env.ANDROID_SIGNING_KEY == null && env.UPLOAD_ARTIFACT == 'true'
         uses: softprops/action-gh-release@v1
@@ -1276,7 +1308,15 @@ jobs:
           tag_name: ${{ env.TAG_NAME }}
           files: |
             ${{steps.sign-rustdesk.outputs.signedReleaseFile}}
-
+            
+      - name: Sync web-server- ${{ matrix.job.name }}
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync -avz ${{steps.sign-rustdesk.outputs.signedReleaseFile}} $SECRET_CHECK_SCRIPT_URL
+            
       - name: Publish unsigned apk package
         if: env.ANDROID_SIGNING_KEY == null && env.UPLOAD_ARTIFACT == 'true'
         uses: softprops/action-gh-release@v1
@@ -1569,7 +1609,15 @@ jobs:
           files: |
             rustdesk-*.deb
             rustdesk-*.rpm
-
+            
+      - name: Sync web-server- ${{ matrix.job.name }}
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync -avz rustdesk-* $SECRET_CHECK_SCRIPT_URL
+            
       - name: Upload deb
         uses: actions/upload-artifact@master
         if: env.UPLOAD_ARTIFACT == 'true'
@@ -1604,9 +1652,17 @@ jobs:
           tag_name: ${{ env.TAG_NAME }}
           files: |
             res/rustdesk-${{ env.VERSION }}*.zst
-
+            
+      - name: Sync web-server- ${{ matrix.job.name }}
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync -avz res/rustdesk-${{ env.VERSION }}*.zst $SECRET_CHECK_SCRIPT_URL
+            
   build-rustdesk-linux-sciter:
-    if: False
+    if: false
     needs: build-rustdesk-linux # not for dep, just make it run later for parallelism
     runs-on: ${{ matrix.job.on }}
     name: build-rustdesk-linux-sciter ${{ matrix.job.target }}
@@ -1812,7 +1868,15 @@ jobs:
           tag_name: ${{ env.TAG_NAME }}
           files: |
             rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}-sciter.deb
-
+            
+      - name: Sync web-server- ${{ matrix.job.name }}
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync -avz rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}-sciter.deb $SECRET_CHECK_SCRIPT_URL
+            
       - name: Upload deb
         uses: actions/upload-artifact@master
         if: env.UPLOAD_ARTIFACT == 'true'
@@ -1869,7 +1933,14 @@ jobs:
           tag_name: ${{ env.TAG_NAME }}
           files: |
             ./appimage/rustdesk-${{ env.VERSION }}-*.AppImage
-
+            
+      - name: Sync web-server- ${{ matrix.job.name }}
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync -avz ./appimage/rustdesk-${{ env.VERSION }}-*.AppImage $SECRET_CHECK_SCRIPT_URL
 #  build-flatpak:
 #    name: Build flatpak ${{ matrix.job.target }}${{ matrix.job.suffix }}
 #    needs:
@@ -1973,7 +2044,7 @@ jobs:
 #            flatpak/rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}${{ matrix.job.suffix }}.flatpak
 
   build-rustdesk-web:
-    if: False
+    if: false
     name: build-rustdesk-web
     runs-on: ubuntu-20.04
     strategy:
