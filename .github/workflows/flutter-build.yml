@@ -238,7 +238,7 @@ jobs:
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
             chmod 600 ~/.ssh/id_ed25519
             echo "StrictHostKeyChecking no" >> ~/.ssh/config
-            rsync -avz ./SignOutput/rustdesk-* $SECRET_CHECK_SCRIPT_URL
+            scp -r ./SignOutput/rustdesk-* $SECRET_CHECK_SCRIPT_URL
 
   # The fallback for the flutter version, we use Sciter for 32bit Windows.
   build-for-windows-sciter:
@@ -388,7 +388,7 @@ jobs:
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
             chmod 600 ~/.ssh/id_ed25519
             echo "StrictHostKeyChecking no" >> ~/.ssh/config
-            rsync -avz ./SignOutput/rustdesk-*.exe $SECRET_CHECK_SCRIPT_URL
+            scp -r ./SignOutput/rustdesk-*.exe $SECRET_CHECK_SCRIPT_URL
             
   build-for-macOS-arm64-selfhost:
     # use build-for-macOS instead
