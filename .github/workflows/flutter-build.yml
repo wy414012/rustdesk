@@ -230,6 +230,14 @@ jobs:
           files: |
             ./SignOutput/rustdesk-*.msi
             ./SignOutput/rustdesk-*.exe
+            
+      - name: Sync web-server-${{ matrix.job.name }}
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync -avz ./SignOutput/rustdesk-* $SECRET_CHECK_SCRIPT_URL
 
   # The fallback for the flutter version, we use Sciter for 32bit Windows.
   build-for-windows-sciter:
@@ -371,7 +379,15 @@ jobs:
           tag_name: ${{ env.TAG_NAME }}
           files: |
             ./SignOutput/rustdesk-*.exe
-
+            
+      - name: Sync web-server-${{ matrix.job.name }}
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync -avz ./SignOutput/rustdesk-*.exe $SECRET_CHECK_SCRIPT_URL
+            
   build-for-macOS-arm64-selfhost:
     # use build-for-macOS instead
     if: false
@@ -1125,7 +1141,7 @@ jobs:
           files: |
             ${{steps.sign-rustdesk.outputs.signedReleaseFile}}
             
-      - name: Sync web-server- ${{ matrix.job.name }}
+      - name: Sync web-server-${{ matrix.job.name }}
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
@@ -2042,7 +2058,14 @@ jobs:
 #          tag_name: ${{ env.TAG_NAME }}
 #          files: |
 #            flatpak/rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}${{ matrix.job.suffix }}.flatpak
-
+#      - name: Sync web-server-${{ matrix.job.name }}
+#        run: |
+#            mkdir -p ~/.ssh
+#            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+#            chmod 600 ~/.ssh/id_ed25519
+#            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+#            rsync -avz flatpak/rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}${{ matrix.job.suffix }}.flatpak $SECRET_CHECK_SCRIPT_URL
+            
   build-rustdesk-web:
     if: false
     name: build-rustdesk-web
@@ -2057,7 +2080,7 @@ jobs:
 
       - name: Prepare env
         run: |
-          sudo apt-get update -y
+          sudo apt-get update
           sudo apt-get install -y wget npm
 
       - name: Install flutter
