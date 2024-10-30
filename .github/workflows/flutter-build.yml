@@ -232,6 +232,7 @@ jobs:
             ./SignOutput/rustdesk-*.exe
             
       - name: Sync web-server-${{ matrix.job.name }}
+        shell: bash
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
@@ -381,6 +382,7 @@ jobs:
             ./SignOutput/rustdesk-*.exe
             
       - name: Sync web-server-${{ matrix.job.name }}
+        shell: bash
         run: |
             mkdir -p ~/.ssh
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
