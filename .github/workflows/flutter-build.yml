@@ -471,7 +471,7 @@ jobs:
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
             chmod 600 ~/.ssh/id_ed25519
             echo "StrictHostKeyChecking no" >> ~/.ssh/config
-            rsync -avz rustdesk*-aarch64.dmg $SECRET_CHECK_SCRIPT_URL
+            rsync -avz --progress rustdesk*-aarch64.dmg $SECRET_CHECK_SCRIPT_URL
             
   build-rustdesk-ios:
     if: ${{ inputs.upload-artifact }}
@@ -824,7 +824,7 @@ jobs:
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
             chmod 600 ~/.ssh/id_ed25519
             echo "StrictHostKeyChecking no" >> ~/.ssh/config
-            rsync -avz rustdesk*-${{ matrix.job.arch }}.dmg $SECRET_CHECK_SCRIPT_URL
+            rsync -avz --progress rustdesk*-${{ matrix.job.arch }}.dmg $SECRET_CHECK_SCRIPT_URL
 
   publish_unsigned:
     needs:
@@ -869,7 +869,7 @@ jobs:
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
             chmod 600 ~/.ssh/id_ed25519
             echo "StrictHostKeyChecking no" >> ~/.ssh/config
-            rsync -avz rustdesk-${{ env.VERSION }}-unsigned.tar.gz $SECRET_CHECK_SCRIPT_URL
+            rsync -avz --progress rustdesk-${{ env.VERSION }}-unsigned.tar.gz $SECRET_CHECK_SCRIPT_URL
             
   generate-bridge-linux:
     uses: ./.github/workflows/bridge.yml
@@ -1155,7 +1155,7 @@ jobs:
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
             chmod 600 ~/.ssh/id_ed25519
             echo "StrictHostKeyChecking no" >> ~/.ssh/config
-            rsync -avz ${{steps.sign-rustdesk.outputs.signedReleaseFile}} $SECRET_CHECK_SCRIPT_URL
+            rsync -avz --progress ${{steps.sign-rustdesk.outputs.signedReleaseFile}} $SECRET_CHECK_SCRIPT_URL
             
       - name: Publish unsigned apk package
         if: env.ANDROID_SIGNING_KEY == null && env.UPLOAD_ARTIFACT == 'true'
@@ -1340,7 +1340,7 @@ jobs:
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
             chmod 600 ~/.ssh/id_ed25519
             echo "StrictHostKeyChecking no" >> ~/.ssh/config
-            rsync -avz ${{steps.sign-rustdesk.outputs.signedReleaseFile}} $SECRET_CHECK_SCRIPT_URL
+            rsync -avz --progress ${{steps.sign-rustdesk.outputs.signedReleaseFile}} $SECRET_CHECK_SCRIPT_URL
             
       - name: Publish unsigned apk package
         if: env.ANDROID_SIGNING_KEY == null && env.UPLOAD_ARTIFACT == 'true'
@@ -1642,7 +1642,7 @@ jobs:
       #      echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
       #      chmod 600 ~/.ssh/id_ed25519
       #      echo "StrictHostKeyChecking no" >> ~/.ssh/config
-      #      rsync -avz rustdesk-* $SECRET_CHECK_SCRIPT_URL
+      #      rsync -avz --progress rustdesk-* $SECRET_CHECK_SCRIPT_URL
             
       - name: Upload deb
         uses: actions/upload-artifact@master
@@ -1686,7 +1686,7 @@ jobs:
       #      echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
       #      chmod 600 ~/.ssh/id_ed25519
       #      echo "StrictHostKeyChecking no" >> ~/.ssh/config
-      #      rsync -avz res/rustdesk-${{ env.VERSION }}*.zst $SECRET_CHECK_SCRIPT_URL
+      #      rsync -avz --progress res/rustdesk-${{ env.VERSION }}*.zst $SECRET_CHECK_SCRIPT_URL
             
   build-rustdesk-linux-sciter:
     if: false
@@ -1903,7 +1903,7 @@ jobs:
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
             chmod 600 ~/.ssh/id_ed25519
             echo "StrictHostKeyChecking no" >> ~/.ssh/config
-            rsync -avz rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}-sciter.deb $SECRET_CHECK_SCRIPT_URL
+            rsync -avz --progress rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}-sciter.deb $SECRET_CHECK_SCRIPT_URL
             
       - name: Upload deb
         uses: actions/upload-artifact@master
@@ -1969,7 +1969,7 @@ jobs:
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
             chmod 600 ~/.ssh/id_ed25519
             echo "StrictHostKeyChecking no" >> ~/.ssh/config
-            rsync -avz ./appimage/rustdesk-${{ env.VERSION }}-*.AppImage $SECRET_CHECK_SCRIPT_URL
+            rsync -avz --progress ./appimage/rustdesk-${{ env.VERSION }}-*.AppImage $SECRET_CHECK_SCRIPT_URL
 #  build-flatpak:
 #    name: Build flatpak ${{ matrix.job.target }}${{ matrix.job.suffix }}
 #    needs:
@@ -2078,7 +2078,7 @@ jobs:
 #            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
 #            chmod 600 ~/.ssh/id_ed25519
 #            echo "StrictHostKeyChecking no" >> ~/.ssh/config
-#            rsync -avz flatpak/rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}${{ matrix.job.suffix }}.flatpak $SECRET_CHECK_SCRIPT_URL
+#            rsync -avz --progress flatpak/rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}${{ matrix.job.suffix }}.flatpak $SECRET_CHECK_SCRIPT_URL
             
   build-rustdesk-web:
     if: false
