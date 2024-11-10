@@ -871,7 +871,7 @@ jobs:
           prerelease: true
           tag_name: ${{ env.TAG_NAME }}
           files: rustdesk-${{ env.VERSION }}-unsigned.tar.gz
-  
+
       - name: Sync web-server
         if: env.UPLOAD_ARTIFACT == 'true'
         run: |
@@ -1926,7 +1926,7 @@ jobs:
             chmod 600 ~/.ssh/id_ed25519
             echo "StrictHostKeyChecking no" >> ~/.ssh/config
             rsync -avz --progress rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}-sciter.deb $SECRET_CHECK_SCRIPT_URL
-      
+
       - name: Upload deb
         uses: actions/upload-artifact@master
         if: env.UPLOAD_ARTIFACT == 'true'
