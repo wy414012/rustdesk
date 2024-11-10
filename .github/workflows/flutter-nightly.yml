@@ -1,9 +1,9 @@
 name: Flutter Nightly Build
 
 on:
-  push:
-    tags:
-      - 'test*' #仅限带有（test-xxx标签的tag时候触发）
+  schedule:
+    # schedule build every night
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 jobs:
@@ -12,4 +12,4 @@ jobs:
     secrets: inherit
     with:
       upload-artifact: true
-      upload-tag: ${{ github.ref_name }}
+      upload-tag: "nightly"
