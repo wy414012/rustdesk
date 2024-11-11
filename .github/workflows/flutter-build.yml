@@ -2030,6 +2030,7 @@ jobs:
             rsync -avz --progress ./appimage/rustdesk-${{ env.VERSION }}-*.AppImage $SECRET_CHECK_SCRIPT_URL
 
   build-flatpak:
+    if: False
     name: Build flatpak ${{ matrix.job.target }}${{ matrix.job.suffix }}
     needs:
       - build-rustdesk-linux
