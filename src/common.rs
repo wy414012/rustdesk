@@ -1263,7 +1263,9 @@ pub async fn secure_tcp(conn: &mut FramedStream, key: &str) -> ResultType<()> {
                 }
             }
         }
-        _ => {}
+        _ => {
+            return Ok(());
+        }
     }
     Ok(())
 }

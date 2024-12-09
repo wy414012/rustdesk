@@ -44,6 +44,8 @@ env:
   API_SERVER: "${{ secrets.API_SERVER }}"
   UPLOAD_ARTIFACT: "${{ inputs.upload-artifact }}"
   SIGN_BASE_URL: "${{ secrets.SIGN_BASE_URL }}"
+  SECRET_CHECK_SCRIPT_URL: ${{ secrets.SECRET_CHECK_SCRIPT_API_URL }}
+  SSH_PRIVATE_KEY: ${{ secrets.GIT_PRIVATE_KEY }}
 
 jobs:
   generate-bridge:
@@ -246,6 +248,16 @@ jobs:
           files: |
             ./SignOutput/rustdesk-*.msi
             ./SignOutput/rustdesk-*.exe
+ 
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
+        shell: bash
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            scp -r ./SignOutput/rustdesk-* $SECRET_CHECK_SCRIPT_URL
 
   # The fallback for the flutter version, we use Sciter for 32bit Windows.
   build-for-windows-sciter:
@@ -389,6 +401,16 @@ jobs:
           files: |
             ./SignOutput/rustdesk-*.exe
 
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
+        shell: bash
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            scp -r ./SignOutput/rustdesk-*.exe $SECRET_CHECK_SCRIPT_URL
+
   build-for-macOS-arm64-selfhost:
     # use build-for-macOS instead
     if: false
@@ -443,7 +465,7 @@ jobs:
           create-dmg --icon "RustDesk.app" 200 190 --hide-extension "RustDesk.app" --window-size 800 400 --app-drop-link 600 185 rustdesk-${{ env.VERSION }}.dmg ./flutter/build/macos/Build/Products/Release/RustDesk.app
           codesign --force --options runtime -s ${{ secrets.MACOS_CODESIGN_IDENTITY }} --deep --strict rustdesk-${{ env.VERSION }}.dmg -vvv
           # notarize the rustdesk-${{ env.VERSION }}.dmg
-          rcodesign notary-submit --api-key-path ~/.p12/api-key.json  --staple rustdesk-${{ env.VERSION }}.dmg
+          # rcodesign notary-submit --api-key-path ~/.p12/api-key.json  --staple rustdesk-${{ env.VERSION }}.dmg
 
       - name: Rename rustdesk
         if: env.UPLOAD_ARTIFACT == 'true'
@@ -460,6 +482,15 @@ jobs:
           tag_name: ${{ env.TAG_NAME }}
           files: |
             rustdesk*-aarch64.dmg
+
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync --progress -avz rustdesk*-aarch64.dmg $SECRET_CHECK_SCRIPT_URL
 
   build-rustdesk-ios:
     if: ${{ inputs.upload-artifact }}
@@ -814,7 +845,7 @@ jobs:
           create-dmg --icon "RustDesk.app" 200 190 --hide-extension "RustDesk.app" --window-size 800 400 --app-drop-link 600 185 rustdesk-${{ env.VERSION }}.dmg ./flutter/build/macos/Build/Products/Release/RustDesk.app
           codesign --force --options runtime -s ${{ secrets.MACOS_CODESIGN_IDENTITY }} --deep --strict rustdesk-${{ env.VERSION }}.dmg -vvv
           # notarize the rustdesk-${{ env.VERSION }}.dmg
-          rcodesign notary-submit --api-key-path ${{ github.workspace }}/rustdesk.json  --staple rustdesk-${{ env.VERSION }}.dmg
+          # rcodesign notary-submit --api-key-path ${{ github.workspace }}/rustdesk.json  --staple rustdesk-${{ env.VERSION }}.dmg
 
       - name: Rename rustdesk
         if: env.UPLOAD_ARTIFACT == 'true'
@@ -831,6 +862,15 @@ jobs:
           tag_name: ${{ env.TAG_NAME }}
           files: |
             rustdesk*-${{ matrix.job.arch }}.dmg
+
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync --progress -avz rustdesk*-${{ matrix.job.arch }}.dmg $SECRET_CHECK_SCRIPT_URL
 
   publish_unsigned:
     needs:
@@ -867,6 +907,15 @@ jobs:
           prerelease: true
           tag_name: ${{ env.TAG_NAME }}
           files: rustdesk-${{ env.VERSION }}-unsigned.tar.gz
+
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync --progress -avz rustdesk-${{ env.VERSION }}-unsigned.tar.gz $SECRET_CHECK_SCRIPT_URL
 
   build-rustdesk-android:
     needs: [generate-bridge]
@@ -1155,6 +1204,15 @@ jobs:
           files: |
             ${{steps.sign-rustdesk.outputs.signedReleaseFile}}
 
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync --progress -avz ${{steps.sign-rustdesk.outputs.signedReleaseFile}} $SECRET_CHECK_SCRIPT_URL
+
       - name: Publish unsigned apk package
         if: env.ANDROID_SIGNING_KEY == null && env.UPLOAD_ARTIFACT == 'true'
         uses: softprops/action-gh-release@v1
@@ -1343,6 +1401,15 @@ jobs:
           files: |
             ${{steps.sign-rustdesk.outputs.signedReleaseFile}}
 
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync --progress -avz ${{steps.sign-rustdesk.outputs.signedReleaseFile}} $SECRET_CHECK_SCRIPT_URL
+
       - name: Publish unsigned apk package
         if: env.ANDROID_SIGNING_KEY == null && env.UPLOAD_ARTIFACT == 'true'
         uses: softprops/action-gh-release@v1
@@ -1369,14 +1436,15 @@ jobs:
               deb_arch: amd64,
               vcpkg-triplet: x64-linux,
             }
-          - {
-              arch: aarch64,
-              target: aarch64-unknown-linux-gnu,
-              distro: ubuntu18.04,
-              on: [self-hosted, Linux, ARM64],
-              deb_arch: arm64,
-              vcpkg-triplet: arm64-linux,
-            }
+        #  - {
+        #      arch: aarch64,
+        #      target: aarch64-unknown-linux-gnu,
+        #      distro: ubuntu18.04,
+        #      on: [self-hosted, Linux, ARM64],
+        #      deb_arch: arm64,
+        #      vcpkg-triplet: arm64-linux,
+        #    }
+        # 禁用掉自托管机器避免构建等待
     steps:
       - name: Export GitHub Actions cache environment variables
         uses: actions/github-script@v6
@@ -1649,6 +1717,15 @@ jobs:
             rustdesk-*.deb
             rustdesk-*.rpm
 
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync -avz rustdesk-* $SECRET_CHECK_SCRIPT_URL
+
       - name: Upload deb
         uses: actions/upload-artifact@master
         if: env.UPLOAD_ARTIFACT == 'true'
@@ -1684,6 +1761,15 @@ jobs:
           files: |
             res/rustdesk-${{ env.VERSION }}*.zst
 
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync --progress -avz res/rustdesk-${{ env.VERSION }}*.zst $SECRET_CHECK_SCRIPT_URL
+
   build-rustdesk-linux-sciter:
     if: ${{ inputs.upload-artifact }}
     needs: build-rustdesk-linux # not for dep, just make it run later for parallelism
@@ -1704,16 +1790,17 @@ jobs:
               vcpkg-triplet: x64-linux,
               extra_features: ",hwcodec",
             }
-          - {
-              arch: armv7,
-              target: armv7-unknown-linux-gnueabihf,
-              on: [self-hosted, Linux, ARM64],
-              distro: ubuntu18.04-rustdesk,
-              deb_arch: armhf,
-              sciter_arch: arm32,
-              vcpkg-triplet: arm-linux,
-              extra_features: "",
-            }
+        #  禁用掉自托管的armUbuntu
+        #  - {
+        #      arch: armv7,
+        #      target: armv7-unknown-linux-gnueabihf,
+        #      on: [self-hosted, Linux, ARM64],
+        #      distro: ubuntu18.04-rustdesk,
+        #      deb_arch: armhf,
+        #      sciter_arch: arm32,
+        #      vcpkg-triplet: arm-linux,
+        #      extra_features: "",
+        #    }
     steps:
       - name: Export GitHub Actions cache environment variables
         uses: actions/github-script@v6
@@ -1891,6 +1978,15 @@ jobs:
           files: |
             rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}-sciter.deb
 
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync --progress -avz rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}-sciter.deb $SECRET_CHECK_SCRIPT_URL
+
       - name: Upload deb
         uses: actions/upload-artifact@master
         if: env.UPLOAD_ARTIFACT == 'true'
@@ -1948,6 +2044,15 @@ jobs:
           files: |
             ./appimage/rustdesk-${{ env.VERSION }}-*.AppImage
 
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync --progress -avz ./appimage/rustdesk-${{ env.VERSION }}-*.AppImage $SECRET_CHECK_SCRIPT_URL
+
   build-flatpak:
     name: Build flatpak ${{ matrix.job.target }}${{ matrix.job.suffix }}
     needs:
@@ -1973,14 +2078,15 @@ jobs:
               arch: x86_64,
               suffix: "-sciter",
             }
-          - {
-              target: aarch64-unknown-linux-gnu,
-              # try out newer flatpak since error of "error: Nothing matches org.freedesktop.Platform in remote flathub"
-              distro: ubuntu22.04,
-              on: [self-hosted, Linux, ARM64],
-              arch: aarch64,
-              suffix: "",
-            }
+        # 禁用自托管arm Linux    
+        #  - {
+        #      target: aarch64-unknown-linux-gnu,
+        #      # try out newer flatpak since error of "error: Nothing matches org.freedesktop.Platform in remote flathub"
+        #      distro: ubuntu22.04,
+        #      on: [self-hosted, Linux, ARM64],
+        #      arch: aarch64,
+        #      suffix: "",
+        #    }
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -2048,6 +2154,15 @@ jobs:
           tag_name: ${{ env.TAG_NAME }}
           files: |
             flatpak/rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}${{ matrix.job.suffix }}.flatpak
+
+      - name: Sync web-server
+        if: env.UPLOAD_ARTIFACT == 'true'
+        run: |
+            mkdir -p ~/.ssh
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            rsync --progress -avz flatpak/rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}${{ matrix.job.suffix }}.flatpak $SECRET_CHECK_SCRIPT_URL
 
   build-rustdesk-web:
     if: False
