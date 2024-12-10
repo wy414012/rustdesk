@@ -2004,7 +2004,8 @@ jobs:
       matrix:
         job:
           - { target: x86_64-unknown-linux-gnu, arch: x86_64 }
-          - { target: aarch64-unknown-linux-gnu, arch: aarch64 }
+        # 由于之前禁用了自托管的amr机器所以这里需要禁用掉，避免构建错误  
+        #  - { target: aarch64-unknown-linux-gnu, arch: aarch64 } 
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
