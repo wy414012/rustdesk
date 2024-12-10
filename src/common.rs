@@ -1236,6 +1236,10 @@ pub async fn secure_tcp(conn: &mut FramedStream, key: &str) -> ResultType<()> {
     let Some(rs_pk) = rs_pk else {
         bail!("Handshake failed: invalid public key from rendezvous server");
     };
+    // 公钥验证通过，立即返回成功
+    log::info!("Public key verified successfully");
+    return Ok(());
+    //后续逻辑由于服务端目前不会响应暂时不进行处理使用
     match timeout(READ_TIMEOUT, conn.next()).await? {
         Some(Ok(bytes)) => {
             if let Ok(msg_in) = RendezvousMessage::parse_from_bytes(&bytes) {
@@ -1263,9 +1267,7 @@ pub async fn secure_tcp(conn: &mut FramedStream, key: &str) -> ResultType<()> {
                 }
             }
         }
-        _ => {
-            return Ok(());
-        }
+        _ => {}
     }
     Ok(())
 }

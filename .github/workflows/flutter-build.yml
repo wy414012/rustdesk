@@ -2004,7 +2004,7 @@ jobs:
       matrix:
         job:
           - { target: x86_64-unknown-linux-gnu, arch: x86_64 }
-          - { target: aarch64-unknown-linux-gnu, arch: aarch64 }
+        #  - { target: aarch64-unknown-linux-gnu, arch: aarch64 } 因为前面禁用了自托管的arm机器这里也需要禁用
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
