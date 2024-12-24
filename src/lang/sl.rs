@@ -648,7 +648,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("one-way-file-transfer-tip", "Enosmerni prenos datotek je omogočen na nadzorovani strani"),
         ("Authentication Required", "Potrebno je preverjanje pristnosti"),
         ("Authenticate", "Preverjanje pristnosti"),
-        ("web_id_input_tip", "Vnesete lahko ID iz istega strežnika, neposredni dostop preko IP naslova v spletnem odjemalcu ni podprt.\nČe želite dostopati do naprave na drugem strežniku, pripnite naslov strežnika (<id>@<naslov_strežnika>?key=<ključ>), npr. 9123456234@192.168.16.1:21117?key=5Qbwsde3unUcJBtrx9ZkvUmwFNoExHzpryHuPUdqlWM=.\nČe želite dostopati do naprave na javnem strežniku, vnesite »<id>@public«; ključ za javni strežnik ni potreben."),
+        ("web_id_input_tip", "Vnesete lahko ID iz istega strežnika, neposredni dostop preko IP naslova v spletnem odjemalcu ni podprt.\nČe želite dostopati do naprave na drugem strežniku, pripnite naslov strežnika (<id>@<naslov_strežnika>?key=<ključ>), npr. 9123456234@192.168.16.1:41117?key=5Qbwsde3unUcJBtrx9ZkvUmwFNoExHzpryHuPUdqlWM=.\nČe želite dostopati do naprave na javnem strežniku, vnesite »<id>@public«; ključ za javni strežnik ni potreben."),
         ("Download", "Prenos"),
         ("Upload folder", "Naloži mapo"),
         ("Upload files", "Naloži datoteke"),
