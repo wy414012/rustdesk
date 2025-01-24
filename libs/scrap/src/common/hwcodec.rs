@@ -190,15 +190,6 @@ impl EncoderApi for HwRamEncoder {
         self.bitrate
     }
 
-<<<<<<< HEAD
-    fn support_abr(&self) -> bool {
-        ["qsv", "vaapi"]
-            .iter()
-            .all(|&x| !self.config.name.contains(x))
-    }
-
-=======
->>>>>>> d656ae29567bd9afa3e354f121e397b94d972826
     fn support_changing_quality(&self) -> bool {
         ["vaapi"].iter().all(|&x| !self.config.name.contains(x))
     }
