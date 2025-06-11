@@ -564,7 +564,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Plug out all", "すべて切断する"),
         ("True color (4:4:4)", "True color (4:4:4)"),
         ("Enable blocking user input", "ユーザー入力のブロックを有効化"),
-        ("id_input_tip", "ID、IPアドレス、またはドメインとポート番号(<ドメイン>:<ポート>)を使用できます。\n他のサーバーのデバイスにアクセスしたい場合は、サーバーアドレス(<id>@<サーバーアドレス>?key=<キーの値>)を追加してください。 \n(例:9123456234@192.168.16.1:21117?key=5Qbwsde3unUcJBtrx9ZkvUmwFNoExHzpryHuPUdqlWM=)\nパブリックサーバーのデバイスに接続したい場合は、「<id>@public」のように入力してください。パブリックサーバーの場合、キーは不要です。\n\n初回接続で中継接続を行いたい場合は、「9123456234/r」のように末尾に「/r」を付けてください。"),
+        ("id_input_tip", "ID、IPアドレス、またはドメインとポート番号(<ドメイン>:<ポート>)を使用できます。\n他のサーバーのデバイスにアクセスしたい場合は、サーバーアドレス(<id>@<サーバーアドレス>?key=<キーの値>)を追加してください。 \n(例:9123456234@192.168.16.1:41117?key=5Qbwsde3unUcJBtrx9ZkvUmwFNoExHzpryHuPUdqlWM=)\nパブリックサーバーのデバイスに接続したい場合は、「<id>@public」のように入力してください。パブリックサーバーの場合、キーは不要です。\n\n初回接続で中継接続を行いたい場合は、「9123456234/r」のように末尾に「/r」を付けてください。"),
         ("privacy_mode_impl_mag_tip", "モード 1"),
         ("privacy_mode_impl_virtual_display_tip", "モード 2"),
         ("Enter privacy mode", "プライバシーモードを起動"),

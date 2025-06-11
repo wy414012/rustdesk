@@ -648,7 +648,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("one-way-file-transfer-tip", "단방향 파일 전송은 원격 제어 대상 기기에서 활성화해야 합니다."),
         ("Authentication Required", "인증이 필요합니다."),
         ("Authenticate", "인증"),
-        ("web_id_input_tip", "동일 서버 내 ID를 입력하십시오. 웹 클라이언트는 IP 직접 연결을 지원하지 않습니다.\n다른 서버의 기기에 연결하려면 서버 주소(<id>@<server_address>?key=<key_value>)를 입력하십시오. 예:\n9123456234@192.168.16.1:21117?key=5Qbwsde3unUcJBtrx9ZkvUmwFNoExHzpryHuPUdqlWM=\n공용 서버 기기에 연결하려면 '<id>@public'을 입력하십시오. (공용 서버는 키가 필요 없습니다.)"),
+        ("web_id_input_tip", "동일 서버 내 ID를 입력하십시오. 웹 클라이언트는 IP 직접 연결을 지원하지 않습니다.\n다른 서버의 기기에 연결하려면 서버 주소(<id>@<server_address>?key=<key_value>)를 입력하십시오. 예:\n9123456234@192.168.16.1:41117?key=5Qbwsde3unUcJBtrx9ZkvUmwFNoExHzpryHuPUdqlWM=\n공용 서버 기기에 연결하려면 '<id>@public'을 입력하십시오. (공용 서버는 키가 필요 없습니다.)"),
         ("Download", "다운로드"),
         ("Upload folder", "폴더 업로드"),
         ("Upload files", "파일 업로드"),

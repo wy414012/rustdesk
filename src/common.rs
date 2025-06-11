@@ -967,8 +967,8 @@ pub fn get_api_server(api: String, custom: String) -> String {
     if res.ends_with('/') {
         res.pop();
     }
-    if res.starts_with("https") && res.ends_with(":21114") {
-        return res.replace(":21114", "");
+    if res.starts_with("https") && res.ends_with(":41114") {
+        return res.replace(":41114", "");
     }
     res
 }

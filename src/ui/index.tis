@@ -538,7 +538,7 @@ class EditDirectAccessPort: Reactor.Component {
 function editDirectAccessPort() {
     var p0 = handler.get_option('direct-access-port');
     var port = p0 ? <input|text name='port' value={p0} /> :
-                    <input|text name='port' novalue={21118} />;
+                    <input|text name='port' novalue={41118} />;
     msgbox("custom-direct-access-port", translate('Direct IP Access Settings'), <div .form .set-password>
             <div><span style="width: 60px;">{translate('Port')}:</span>{port}</div>
         </div>, "", function(res=null) {
