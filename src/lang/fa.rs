@@ -564,7 +564,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Plug out all", "همه را خارج کنید"),
         ("True color (4:4:4)", "رنگ واقعی (4:4:4)"),
         ("Enable blocking user input", "مسدود کردن ورودی کاربر را فعال کنید"),
-        ("id_input_tip", " \"<id>@public\" :برای دسترسی به سرورهای عمومی نیازی به کلید نیست ، مثل \n9123456234@192.168.16.1:41117?key=5Qbwsde3unUcJBtrx9ZkvUmwFNoExHzpryHuPUdqlWM=.\n برای مثال (<id>@<server_address>?key=<key_value>) :اگر می خواهید به دستگاه دیگری در سروری دسترسی پیدا کنید ، ادرس سرور را اضافه نمایید ماتتد \n (domain:port)یا یک دامنه با پورت را وارد کنید IP شما می توانید یک شناسه یا یک"),
+        ("id_input_tip", " \"<id>@public\" :برای دسترسی به سرورهای عمومی نیازی به کلید نیست ، مثل \n9123456234@192.168.16.1:21117?key=5Qbwsde3unUcJBtrx9ZkvUmwFNoExHzpryHuPUdqlWM=.\n برای مثال (<id>@<server_address>?key=<key_value>) :اگر می خواهید به دستگاه دیگری در سروری دسترسی پیدا کنید ، ادرس سرور را اضافه نمایید ماتتد \n (domain:port)یا یک دامنه با پورت را وارد کنید IP شما می توانید یک شناسه یا یک"),
         ("privacy_mode_impl_mag_tip", "حالت 1"),
         ("privacy_mode_impl_virtual_display_tip", "حالت 2"),
         ("Enter privacy mode", "ورود به حالت حریم خصوصی"),
