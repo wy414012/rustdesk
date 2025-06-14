@@ -2,7 +2,7 @@ version: 2
 updates:
   - package-ecosystem: "gitsubmodule"
     directory: "/"
-    target-branch: "master"
+    target-branch: "shared"
     schedule:
       interval: "daily"
     commit-message:
