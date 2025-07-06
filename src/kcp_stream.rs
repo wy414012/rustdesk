@@ -21,12 +21,12 @@ pub struct KcpStream {
 
 impl KcpStream {
     fn create_framed(stream: stream::KcpStream, local_addr: Option<SocketAddr>) -> Stream {
-        Stream::Tcp(FramedStream(
+        Stream::Tcp(Box::new(FramedStream(
             tokio_util::codec::Framed::new(DynTcpStream(Box::new(stream)), BytesCodec::new()),
             local_addr.unwrap_or(config::Config::get_any_listen_addr(true)),
             None,
             0,
-        ))
+        )))
     }
 
     pub async fn accept(
@@ -103,7 +103,7 @@ impl KcpStream {
     ) {
         let udp = udp_socket.clone();
         tokio::spawn(async move {
-            let mut buf = vec![0; 1500];
+            let mut buf = [0u8; 1500];
             loop {
                 tokio::select! {
                     _ = &mut stop_receiver => {
