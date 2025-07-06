@@ -576,16 +576,16 @@ impl<T: InvokeUiSession> Remote<T> {
                             .await
                     );
                 } else {
-                    match fs::TransferJob::new_read(
+                    match fs::TransferJob::new_read(fs::ReadJobOptions {
                         id,
                         r#type,
-                        to.clone(),
-                        fs::DataSource::FilePath(PathBuf::from(&path)),
+                        remote: to.clone(),
+                        data_source: fs::DataSource::FilePath(PathBuf::from(&path)),
                         file_num,
-                        include_hidden,
+                        show_hidden: include_hidden,
                         is_remote,
-                        od,
-                    ) {
+                        enable_overwrite_detection: od,
+                    }) {
                         Err(err) => {
                             self.handle_job_status(id, -1, Some(err.to_string()));
                         }
@@ -647,16 +647,16 @@ impl<T: InvokeUiSession> Remote<T> {
                     job.is_last_job = true;
                     self.write_jobs.push(job);
                 } else {
-                    match fs::TransferJob::new_read(
+                    match fs::TransferJob::new_read(fs::ReadJobOptions {
                         id,
                         r#type,
-                        to.clone(),
-                        fs::DataSource::FilePath(PathBuf::from(&path)),
+                        remote: to.clone(),
+                        data_source: fs::DataSource::FilePath(PathBuf::from(&path)),
                         file_num,
-                        include_hidden,
+                        show_hidden: include_hidden,
                         is_remote,
-                        od,
-                    ) {
+                        enable_overwrite_detection: od,
+                    }) {
                         Err(err) => {
                             self.handle_job_status(id, -1, Some(err.to_string()));
                         }

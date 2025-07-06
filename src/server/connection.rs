@@ -2515,16 +2515,16 @@ impl Connection {
                                         }
                                     }
                                 };
-                                match fs::TransferJob::new_read(
+                                match fs::TransferJob::new_read(fs::ReadJobOptions {
                                     id,
                                     r#type,
-                                    "".to_string(),
+                                    remote: "".to_string(),
                                     data_source,
-                                    s.file_num,
-                                    s.include_hidden,
-                                    false,
-                                    od,
-                                ) {
+                                    file_num: s.file_num,
+                                    show_hidden: s.include_hidden,
+                                    is_remote: false,
+                                    enable_overwrite_detection: od,
+                                }) {
                                     Err(err) => {
                                         self.send(fs::new_error(id, err, 0)).await;
                                     }
