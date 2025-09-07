@@ -12,14 +12,14 @@ on:
   pull_request:
     paths-ignore:
       - "docs/**"
-      - "README.md"
+      - "*.md"
   push:
     branches:
       - shared
     paths-ignore:
       - ".github/**"
       - "docs/**"
-      - "README.md"
+      - "*.md"
       - "res/**"
       - "appimage/**"
       - "flatpak/**"
