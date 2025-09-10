@@ -13,11 +13,11 @@ git clone --recurse-submodules <仓库地址>
 2. **配置环境变量**：在 Fork 后的仓库中配置以下环境变量。
 
 ## 3. 环境变量配置
-在仓库的 `settings-->secrets-->actions` 中配置以下变量按需配置：
+在仓库的 `settings-->secrets-->actions` 点击`New repository secret`添加以下变量按需配置：
 
 | 变量名                  | 描述                                                                 | 示例值                                                                 |
 |-------------------------|----------------------------------------------------------------------|-----------------------------------------------------------------------|
-| `RS_PUB_KEY`            | 自己的服务端公钥                                                     | `11111-1111-111-111-111`                                           |
+| `RS_PUB_KEY`            | 自己的服务端公钥（必须不然编译后密钥任然是默认的）                    | `11111-1111-111-111-111`                                           |
 | `RENDEZVOUS_SERVER`     | 自己的 Rendezvous 服务器地址（可配置多个，用逗号分隔）               | `server1.com,server2.com`                                             |
 | `API_SERVER`            | 自己的 API 服务器地址                                                | `https://api.example.com`                                            |
 | `ANDROID_SIGNING_KEY`   | 安卓签名密钥                                                         | `xxxxx`                                   |
