@@ -44,7 +44,7 @@ import 'package:flutter_hbb/native/win32.dart'
     if (dart.library.html) 'package:flutter_hbb/web/win32.dart';
 import 'package:flutter_hbb/native/common.dart'
     if (dart.library.html) 'package:flutter_hbb/web/common.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_hbb/utils/http_service.dart' as http;
 
 final globalKey = GlobalKey<NavigatorState>();
 final navigationBarKey = GlobalKey();
@@ -1681,13 +1681,12 @@ class LastWindowPosition {
       this.offsetHeight, this.isMaximized, this.isFullscreen);
 
   bool equals(LastWindowPosition other) {
-    return (
-      (width == other.width) &&
-      (height == other.height) &&
-      (offsetWidth == other.offsetWidth) &&
-      (offsetHeight == other.offsetHeight) &&
-      (isMaximized == other.isMaximized) &&
-      (isFullscreen == other.isFullscreen));
+    return ((width == other.width) &&
+        (height == other.height) &&
+        (offsetWidth == other.offsetWidth) &&
+        (offsetHeight == other.offsetHeight) &&
+        (isMaximized == other.isMaximized) &&
+        (isFullscreen == other.isFullscreen));
   }
 
   Map<String, dynamic> toJson() {
@@ -1736,22 +1735,29 @@ final Debouncer _saveWindowDebounce = Debouncer(delay: Duration(seconds: 1));
 
 /// Save window position and size on exit
 /// Note that windowId must be provided if it's subwindow
-Future<void> saveWindowPosition(WindowType type, {int? windowId, bool? flush}) async {
+Future<void> saveWindowPosition(WindowType type,
+    {int? windowId, bool? flush}) async {
   if (type != WindowType.Main && windowId == null) {
     debugPrint(
         "Error: windowId cannot be null when saving positions for sub window");
   }
 
-  late Offset position;
-  late Size sz;
+  Offset? position;
+  Size? sz;
   late bool isMaximized;
   bool isFullscreen = stateGlobal.fullscreen.isTrue;
+
   setPreFrame() {
     final pos = bind.getLocalFlutterOption(k: windowFramePrefix + type.name);
     var lpos = LastWindowPosition.loadFromString(pos);
-    position = Offset(
-        lpos?.offsetWidth ?? position.dx, lpos?.offsetHeight ?? position.dy);
-    sz = Size(lpos?.width ?? sz.width, lpos?.height ?? sz.height);
+    if (lpos != null) {
+      if (lpos.offsetWidth != null && lpos.offsetHeight != null) {
+        position = Offset(lpos.offsetWidth!, lpos.offsetHeight!);
+      }
+      if (lpos.width != null && lpos.height != null) {
+        sz = Size(lpos.width!, lpos.height!);
+      }
+    }
   }
 
   switch (type) {
@@ -1791,24 +1797,25 @@ Future<void> saveWindowPosition(WindowType type, {int? windowId, bool? flush}) a
       }
       break;
   }
-  if (isWindows) {
+  if (isWindows && position != null) {
     const kMinOffset = -10000;
     const kMaxOffset = 10000;
-    if (position.dx < kMinOffset ||
-        position.dy < kMinOffset ||
-        position.dx > kMaxOffset ||
-        position.dy > kMaxOffset) {
+    if (position!.dx < kMinOffset ||
+        position!.dy < kMinOffset ||
+        position!.dx > kMaxOffset ||
+        position!.dy > kMaxOffset) {
       debugPrint("Invalid position: $position, ignore saving position");
       return;
     }
   }
 
-  final pos = LastWindowPosition(
-      sz.width, sz.height, position.dx, position.dy, isMaximized, isFullscreen);
+  final pos = LastWindowPosition(sz?.width, sz?.height, position?.dx,
+      position?.dy, isMaximized, isFullscreen);
 
   final WindowKey key = (type: type, windowId: windowId);
 
-  final bool haveNewWindowPosition = (_lastWindowPosition == null) || !pos.equals(_lastWindowPosition!);
+  final bool haveNewWindowPosition =
+      (_lastWindowPosition == null) || !pos.equals(_lastWindowPosition!);
   final bool isPreviousNewWindowPositionPending = _saveWindowDebounce.isRunning;
 
   if (haveNewWindowPosition || isPreviousNewWindowPositionPending) {
@@ -1834,10 +1841,11 @@ Future<void> _saveWindowPositionActual(WindowKey key) async {
     await bind.setLocalFlutterOption(
         k: windowFramePrefix + key.type.name, v: pos.toString());
 
-    if ((key.type == WindowType.RemoteDesktop || key.type == WindowType.ViewCamera) &&
+    if ((key.type == WindowType.RemoteDesktop ||
+            key.type == WindowType.ViewCamera) &&
         key.windowId != null) {
-      await _saveSessionWindowPosition(
-          key.type, key.windowId!, pos.isMaximized ?? false, pos.isFullscreen ?? false, pos);
+      await _saveSessionWindowPosition(key.type, key.windowId!,
+          pos.isMaximized ?? false, pos.isFullscreen ?? false, pos);
     }
   }
 }
@@ -2941,7 +2949,7 @@ Future<void> updateSystemWindowTheme() async {
 ///
 /// Note: not found a general solution for rust based AVFoundation bingding.
 /// [AVFoundation] crate has compile error.
-const kMacOSPermChannel = MethodChannel("org.rustdesk.rustdesk/macos");
+const kMacOSPermChannel = MethodChannel("org.rustdesk.rustdesk/host");
 
 enum PermissionAuthorizeType {
   undetermined,

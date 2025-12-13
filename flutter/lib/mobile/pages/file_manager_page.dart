@@ -12,7 +12,11 @@ import '../../common/widgets/dialog.dart';
 
 class FileManagerPage extends StatefulWidget {
   FileManagerPage(
-      {Key? key, required this.id, this.password, this.isSharedPassword, this.forceRelay})
+      {Key? key,
+      required this.id,
+      this.password,
+      this.isSharedPassword,
+      this.forceRelay})
       : super(key: key);
   final String id;
   final String? password;
@@ -92,6 +96,7 @@ class _FileManagerPageState extends State<FileManagerPage> {
       gFFI.dialogManager.dismissAll();
       WakelockPlus.disable();
     });
+    model.jobController.clear();
     super.dispose();
   }
 
@@ -112,8 +117,7 @@ class _FileManagerPageState extends State<FileManagerPage> {
           leading: Row(children: [
             IconButton(
                 icon: Icon(Icons.close),
-                onPressed: () =>
-                    clientClose(gFFI.sessionId, gFFI.dialogManager)),
+                onPressed: () => clientClose(gFFI.sessionId, gFFI)),
           ]),
           centerTitle: true,
           title: ToggleSwitch(
@@ -424,6 +428,7 @@ class FileManagerView extends StatefulWidget {
 class _FileManagerViewState extends State<FileManagerView> {
   final _listScrollController = ScrollController();
   final _breadCrumbScroller = ScrollController();
+  late final ascending = Rx<bool>(controller.sortAscending);
 
   bool get isLocal => widget.controller.isLocal;
   FileController get controller => widget.controller;
@@ -635,7 +640,17 @@ class _FileManagerViewState extends State<FileManagerView> {
                             ))
                         .toList();
                   },
-                  onSelected: controller.changeSortStyle),
+                  onSelected: (sortBy) {
+                    // If selecting the same sort option, flip the order
+                    // If selecting a different sort option, use ascending order
+                    if (controller.sortBy.value == sortBy) {
+                      ascending.value = !controller.sortAscending;
+                    } else {
+                      ascending.value = true;
+                    }
+                    controller.changeSortStyle(sortBy,
+                        ascending: ascending.value);
+                  }),
             ],
           )
         ],

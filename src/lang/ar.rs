@@ -719,7 +719,15 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Small", "صغير"),
         ("Large", "كبير"),
         ("Show virtual joystick", "إظهار عصا التحكم الافتراضية"),
-        ("Edit note", ""),
-        ("Alias", ""),
+        ("Edit note", "تعديل الملاحظة"),
+        ("Alias", "اسم مستعار"),
+        ("ScrollEdge", "حافة التمرير"),
+        ("Allow insecure TLS fallback", "السماح بالرجوع إلى TLS غير الآمن"),
+        ("allow-insecure-tls-fallback-tip", "يسمح باستخدام اتصال TLS غير آمن عند فشل الاتصال الآمن"),
+        ("Disable UDP", "تعطيل UDP"),
+        ("disable-udp-tip", "عند التفعيل لن يتم استخدام بروتوكول UDP"),
+        ("server-oss-not-support-tip", "هذه الميزة غير مدعومة من قبل خادمك"),
+        ("input note here", "أدخل الملاحظة هنا"),
+        ("note-at-conn-end-tip", "سيتم عرض هذه الملاحظة عند نهاية الاتصال"),
     ].iter().cloned().collect();
 }
