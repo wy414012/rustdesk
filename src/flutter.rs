@@ -23,7 +23,7 @@ use std::{
     os::raw::{c_char, c_int, c_void},
     str::FromStr,
     sync::{
-        atomic::{AtomicBool, Ordering},
+        atomic::{AtomicBool, AtomicUsize, Ordering},
         Arc, RwLock,
     },
 };
@@ -609,7 +609,22 @@ impl FlutterHandler {
                 h.insert("original_width", original_resolution.width);
                 h.insert("original_height", original_resolution.height);
             }
-            h.insert("scale", (d.scale * 100.0f64) as i32);
+            // Don't convert scale (x 100) to i32 directly.
+            // (d.scale * 100.0f64) as i32 may produces inaccuracies.
+            //
+            // Example: GNOME Wayland with Fractional Scaling enabled:
+            // - Physical resolution: 2560x1600
+            // - Logical resolution: 1074x1065
+            // - Scale factor: 150%
+            // Passing physical dimensions and scale factor prevents accurate logical resolution calculation
+            // since 2560/1.5 = 1706.666... (rounded to 1706.67) and 1600/1.5 = 1066.666... (rounded to 1066.67)
+            // h.insert("scale", (d.scale * 100.0f64) as i32);
+
+            // Send scaled_width for accurate logical scale calculation.
+            if d.scale > 0.0 {
+                let scaled_width = (d.width as f64 / d.scale).round() as i32;
+                h.insert("scaled_width", scaled_width);
+            }
             msg_vec.push(h);
         }
         serde_json::ser::to_string(&msg_vec).unwrap_or("".to_owned())
@@ -679,7 +694,7 @@ impl InvokeUiSession for FlutterHandler {
     }
 
     /// unused in flutter, use switch_display or set_peer_info
-    fn set_display(&self, _x: i32, _y: i32, _w: i32, _h: i32, _cursor_embedded: bool) {}
+    fn set_display(&self, _x: i32, _y: i32, _w: i32, _h: i32, _cursor_embedded: bool, _scale: f64) {}
 
     fn update_privacy_mode(&self) {
         self.push_event::<&str>("update_privacy_mode", &[], &[]);
@@ -756,7 +771,7 @@ impl InvokeUiSession for FlutterHandler {
     // unused in flutter
     fn clear_all_jobs(&self) {}
 
-    fn load_last_job(&self, _cnt: i32, job_json: &str) {
+    fn load_last_job(&self, _cnt: i32, job_json: &str, _auto_start: bool) {
         self.push_event("load_last_job", &[("value", job_json)], &[]);
     }
 
@@ -1328,6 +1343,7 @@ pub fn session_add(
         server_keyboard_enabled: Arc::new(RwLock::new(true)),
         server_file_transfer_enabled: Arc::new(RwLock::new(true)),
         server_clipboard_enabled: Arc::new(RwLock::new(true)),
+        reconnect_count: Arc::new(AtomicUsize::new(0)),
         ..Default::default()
     };
 
@@ -2100,6 +2116,26 @@ pub mod sessions {
         #[cfg(not(any(target_os = "android", target_os = "ios")))]
         update_session_count_to_server();
         s
+    }
+
+    /// Check if removing a session by session_id would result in removing the entire peer.
+    ///
+    /// Returns:
+    /// - `true`: The session exists and removing it would leave the peer with no other sessions,
+    ///           so the entire peer would be removed (equivalent to `remove_session_by_session_id` returning `Some`)
+    /// - `false`: The session doesn't exist, or it exists but the peer has other sessions,
+    ///            so the peer would not be removed (equivalent to `remove_session_by_session_id` returning `None`)
+    #[inline]
+    pub fn would_remove_peer_by_session_id(id: &SessionID) -> bool {
+        for (_peer_key, s) in SESSIONS.read().unwrap().iter() {
+            let read_lock = s.ui_handler.session_handlers.read().unwrap();
+            if read_lock.contains_key(id) {
+                // Found the session, check if it's the only one for this peer
+                return read_lock.len() == 1;
+            }
+        }
+        // Session not found
+        false
     }
 
     fn check_remove_unused_displays(
